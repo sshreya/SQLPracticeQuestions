@@ -1,0 +1,40 @@
+# Find the change in employee status 
+# Here is the ready script:
+create table emp_2020
+(
+emp_id int,
+designation varchar(20)
+);
+
+create table emp_2021
+(
+emp_id int,
+designation varchar(20)
+)
+
+insert into emp_2020 values (1,'Trainee'), (2,'Developer'),(3,'Senior Developer'),(4,'Manager');
+insert into emp_2021 values (1,'Developer'), (2,'Developer'),(3,'Manager'),(5,'Trainee');
+
+
+Solution :
+WITH cte_desg AS(
+SELECT 
+	COALESCE (e1.emp_id,e2.emp_id) AS emp_id,
+	CASE 
+		WHEN e1.designation IS NULL THEN 'New'
+		WHEN e2.designation IS NULL THEN 'Resigned'
+		WHEN e1.designation != e2.designation THEN  'Promoted'
+	END AS comment	
+FROM 
+	emp_2020 e1
+FULL OUTER JOIN 
+	emp_2021 e2 
+ON e1.emp_id = e2.emp_id
+)
+SELECT 
+	*
+FROM 
+	cte_desg 
+WHERE 
+	comment IS NOT NULL
+;
