@@ -1,0 +1,47 @@
+#EXL Interview Question - Find the most and least populated cities in a state.
+CREATE TABLE city_population (
+    state VARCHAR(50),
+    city VARCHAR(50),
+    population INT
+);
+INSERT INTO city_population (state, city, population) VALUES ('haryana', 'ambala', 100);
+INSERT INTO city_population (state, city, population) VALUES ('haryana', 'panipat', 200);
+INSERT INTO city_population (state, city, population) VALUES ('haryana', 'gurgaon', 300);
+INSERT INTO city_population (state, city, population) VALUES ('punjab', 'amritsar', 150);
+INSERT INTO city_population (state, city, population) VALUES ('punjab', 'ludhiana', 400);
+INSERT INTO city_population (state, city, population) VALUES ('punjab', 'jalandhar', 250);
+INSERT INTO city_population (state, city, population) VALUES ('maharashtra', 'mumbai', 1000);
+INSERT INTO city_population (state, city, population) VALUES ('maharashtra', 'pune', 600);
+INSERT INTO city_population (state, city, population) VALUES ('maharashtra', 'nagpur', 300);
+INSERT INTO city_population (state, city, population) VALUES ('karnataka', 'bangalore', 900);
+INSERT INTO city_population (state, city, population) VALUES ('karnataka', 'mysore', 400);
+INSERT INTO city_population (state, city, population) VALUES ('karnataka', 'mangalore', 200);
+
+Solution:
+WITH max_pop AS(
+SELECT 
+	state,
+	city AS most_populated_city
+FROM 
+	city_population 
+WHERE 
+	(state, population) IN (SELECT state, max(population) FROM city_population GROUP BY state)
+)
+,min_pop AS(
+SELECT 
+	state,
+	city AS least_populated_city
+FROM 
+	city_population 
+WHERE 
+	(state, population) IN (SELECT state, min(population) FROM city_population GROUP BY state)
+)
+SELECT 
+	a.*,
+	b.least_populated_city
+FROM 
+	max_pop a 
+JOIN 
+	min_pop b 
+ON a.state = b.state
+;
